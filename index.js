@@ -29,7 +29,7 @@ const pool = new Pool(pgConif);
 
 //   try {
 //     const result = await client.query(
-//       "CREATE TABLE users (name VARCHAR(255), age INT, phone VARCHAR(255), email VARCHAR(255), id VARCHAR(255))"
+//       "CREATE TABLE us (name VARCHAR(255), age INT, phone VARCHAR(255), email VARCHAR(255), id VARCHAR(255),password VARCHAR(255))"
 //     );
 
 //     // console.log(result.rows[0]);
@@ -53,22 +53,24 @@ const pool = new Pool(pgConif);
 // }
 
 app.get("/users", async (req, res) => {
+  
   const client = await pool.connect();
   try {
-    client.query("SELECT * FROM users");
+    const result = await client.query("SELECT * FROM users");
+    res.status(200).send({ message: result.rows  });
   } catch (error) {
     console.log(error);
   } finally {
     client.release();
   }
-  res.status(200).send({ message: "success" });
+ 
 });
 
 app.post("/add-user", async (req, res) => {
   const newUser = req.body;
   console.log(newUser);
   const client = await pool.connect();
-  const Query = `INSERT INTO users (name, age, email, id) VALUES ('${newUser.name}','${newUser.age}','${newUser.email}','${newUser.id}');`;
+  const Query = `INSERT INTO us (name, age, email, id, password) VALUES ('${newUser.name}','${newUser.age}','${newUser.email}','${newUser.id}','${newUser.password}');`;
   try {
     client.query(Query);
   } catch (e) {
