@@ -4,7 +4,6 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const dotenv = require("dotenv");
 
-
 dotenv.config();
 const app = express();
 app.use(cors());
@@ -25,6 +24,34 @@ const pgConif = {
 
 const pool = new Pool(pgConif);
 
+// async function getPgVersion() {
+//   const client = await pool.connect();
+
+//   try {
+//     const result = await client.query(
+//       "CREATE TABLE users (name VARCHAR(255), age INT, phone VARCHAR(255), email VARCHAR(255), id VARCHAR(255))"
+//     );
+
+//     // console.log(result.rows[0]);
+//   } finally {
+//     client.release();
+//   }
+// }
+
+// getPgVersion();
+
+// async function getPgVersion() {
+//   const client = await pool.connect();
+
+//   try {
+//     const result = await client.query("DROP TABLE users ");
+
+//     // console.log(result.rows[0]);
+//   } finally {
+//     client.release();
+//   }
+// }
+
 app.get("/users", async (req, res) => {
   const client = await pool.connect();
   try {
@@ -41,7 +68,7 @@ app.post("/add-user", async (req, res) => {
   const newUser = req.body;
   console.log(newUser);
   const client = await pool.connect();
-  const Query = `INSERT INTO users (name, age, email) VALUES ('${newUser.name}','${newUser.age}','${newUser.email}');`;
+  const Query = `INSERT INTO users (name, age, email, id) VALUES ('${newUser.name}','${newUser.age}','${newUser.email}','${newUser.id}');`;
   try {
     client.query(Query);
   } catch (e) {
@@ -53,7 +80,22 @@ app.post("/add-user", async (req, res) => {
   res.status(200).send({ message: "User Added successfully" });
 });
 
+app.delete("/delete-user", async (req, res) => {
+  const deleteUser = req.body;
+  const client = await pool.connect();
+  const Q = `DELETE FROM users WHERE name='${deleteUser.name}'`;
+  // const Query = "DELETE FROM users WHERE name='bold'";
 
-app.listen(3000, () => {
-  console.log("Server is running on port 3000");
+  try {
+    client.query(Q);
+  } catch (e) {
+    console.log(e);
+  } finally {
+    client.release();
+  }
+  res.status(200).send({ message: "User Delete is successfully" });
+});
+
+app.listen(4000, () => {
+  console.log("Server is running on port 4000");
 });
