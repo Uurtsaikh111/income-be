@@ -44,7 +44,7 @@ const pool = new Pool(pgConif);
 //   const client = await pool.connect();
 
 //   try {
-//     const result = await client.query("DROP TABLE users ");
+//     const result = await client.query("DROP TABLE us;");
 
 //     // console.log(result.rows[0]);
 //   } finally {
@@ -53,24 +53,22 @@ const pool = new Pool(pgConif);
 // }
 
 app.get("/users", async (req, res) => {
-  
   const client = await pool.connect();
   try {
     const result = await client.query("SELECT * FROM users");
-    res.status(200).send({ message: result.rows  });
+    res.status(200).send({ message: result.rows });
   } catch (error) {
     console.log(error);
   } finally {
     client.release();
   }
- 
 });
 
 app.post("/add-user", async (req, res) => {
   const newUser = req.body;
   console.log(newUser);
   const client = await pool.connect();
-  const Query = `INSERT INTO us (name, age, email, id, password) VALUES ('${newUser.name}','${newUser.age}','${newUser.email}','${newUser.id}','${newUser.password}');`;
+  const Query = `INSERT INTO users (name, email, id, password) VALUES ('${newUser.name}','${newUser.email}','${newUser.id}','${newUser.password}');`;
   try {
     client.query(Query);
   } catch (e) {
@@ -79,14 +77,13 @@ app.post("/add-user", async (req, res) => {
     client.release();
   }
 
-  res.status(200).send({ message: "User Added successfully" });
+  res.status(200).send(true);
 });
 
 app.delete("/delete-user", async (req, res) => {
   const deleteUser = req.body;
   const client = await pool.connect();
-  const Q = `DELETE FROM users WHERE name='${deleteUser.name}'`;
-  // const Query = "DELETE FROM users WHERE name='bold'";
+  const Q = `DELETE FROM users WHERE email='${deleteUser.email}'`;
 
   try {
     client.query(Q);
