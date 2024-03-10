@@ -29,7 +29,7 @@ const pool = new Pool(pgConif);
 
 //   try {
 //     const result = await client.query(
-//       "CREATE TABLE us (name VARCHAR(255), age INT, phone VARCHAR(255), email VARCHAR(255), id VARCHAR(255),password VARCHAR(255))"
+//       "CREATE TABLE users (name VARCHAR(255) NOT NULL, currency TEXT, email VARCHAR(255) NOT NULL, id VARCHAR(255),password VARCHAR(255) NOT NULL)"
 //     );
 
 //     // console.log(result.rows[0]);
@@ -38,19 +38,21 @@ const pool = new Pool(pgConif);
 //   }
 // }
 
-// getPgVersion();
+//  getPgVersion();
 
 // async function getPgVersion() {
 //   const client = await pool.connect();
 
 //   try {
-//     const result = await client.query("DROP TABLE us;");
+//     const result = await client.query("DROP TABLE users;");
 
 //     // console.log(result.rows[0]);
 //   } finally {
 //     client.release();
 //   }
 // }
+
+
 
 app.get("/users", async (req, res) => {
   const client = await pool.connect();
@@ -68,7 +70,7 @@ app.post("/add-user", async (req, res) => {
   const newUser = req.body;
   console.log(newUser);
   const client = await pool.connect();
-  const Query = `INSERT INTO users (name, email, id, password) VALUES ('${newUser.name}','${newUser.email}','${newUser.id}','${newUser.password}');`;
+  const Query = `INSERT INTO users (name, email, id, password, currency) VALUES ('${newUser.name}','${newUser.email}','${newUser.id}','${newUser.password}','${newUser.currency}');`;
   try {
     client.query(Query);
   } catch (e) {
@@ -80,20 +82,43 @@ app.post("/add-user", async (req, res) => {
   res.status(200).send(true);
 });
 
-app.delete("/delete-user", async (req, res) => {
-  const deleteUser = req.body;
+app.post("/login", async (req, res) => {
+  const user = req.body;
+  console.log("fytfbtfb", user);
   const client = await pool.connect();
-  const Q = `DELETE FROM users WHERE email='${deleteUser.email}'`;
+  const Query = `SELECT * FROM users WHERE (email='${user.email}' AND password='${user.password}');`;
 
   try {
-    client.query(Q);
+    const response = client.query(Query);
+    console.log("response", { response });
+    if (response["rowCount"]) {
+      return res.status(200).send({ success: "true" });
+    } else {
+      console.log(response);
+      return res.status(500).send({ success: "false" });
+    }
   } catch (e) {
     console.log(e);
   } finally {
     client.release();
+    console.log("user add successfully");
   }
-  res.status(200).send({ message: "User Delete is successfully" });
 });
+
+// app.delete("/delete-user", async (req, res) => {
+//   const deleteUser = req.body;
+//   const client = await pool.connect();
+//   const Q = `DELETE FROM users WHERE email='${deleteUser.email}'`;
+
+//   try {
+//     client.query(Q);
+//   } catch (e) {
+//     console.log(e);
+//   } finally {
+//     client.release();
+//   }
+//   res.status(200).send({ message: "User Delete is successfully" });
+// });
 
 app.listen(4000, () => {
   console.log("Server is running on port 4000");
