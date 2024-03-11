@@ -29,7 +29,7 @@ const pool = new Pool(pgConif);
 
 //   try {
 //     const result = await client.query(
-//       "CREATE TABLE users (name VARCHAR(255) NOT NULL, currency TEXT, email VARCHAR(255) NOT NULL, id VARCHAR(255),password VARCHAR(255) NOT NULL)"
+//       "CREATE TABLE users (name VARCHAR(50) NOT NULL, currency TEXT, email VARCHAR(50) NOT NULL UNIQUE, id VARCHAR(50) NOT NULL PRIMARY KEY,password VARCHAR(30) NOT NULL)"
 //     );
 
 //     // console.log(result.rows[0]);
@@ -54,17 +54,17 @@ const pool = new Pool(pgConif);
 
 
 
-app.get("/users", async (req, res) => {
-  const client = await pool.connect();
-  try {
-    const result = await client.query("SELECT * FROM users");
-    res.status(200).send({ message: result.rows });
-  } catch (error) {
-    console.log(error);
-  } finally {
-    client.release();
-  }
-});
+// app.get("/users", async (req, res) => {
+//   const client = await pool.connect();
+//   try {
+//     const result = await client.query("SELECT * FROM users");
+//     res.status(200).send({ message: result.rows });
+//   } catch (error) {
+//     console.log(error);
+//   } finally {
+//     client.release();
+//   }
+// });
 
 app.post("/add-user", async (req, res) => {
   const newUser = req.body;
@@ -72,29 +72,39 @@ app.post("/add-user", async (req, res) => {
   const client = await pool.connect();
   const Query = `INSERT INTO users (name, email, id, password, currency) VALUES ('${newUser.name}','${newUser.email}','${newUser.id}','${newUser.password}','${newUser.currency}');`;
   try {
-    client.query(Query);
+    const response = await client.query(Query);
+    console.log("response", { response });
+    if (response["rowCount"]) {
+      console.log(response["rowCount"])
+      return res.status(200).send({ success: "true" });
+      
+    } else {
+      console.log(response["rowCount"]);
+      return res.status(500).send({ success: "false" });
+    }
   } catch (e) {
     console.log(e);
   } finally {
     client.release();
   }
 
-  res.status(200).send(true);
 });
 
 app.post("/login", async (req, res) => {
   const user = req.body;
-  console.log("fytfbtfb", user);
+  console.log("user", user);
   const client = await pool.connect();
   const Query = `SELECT * FROM users WHERE (email='${user.email}' AND password='${user.password}');`;
 
   try {
-    const response = client.query(Query);
+    const response = await client.query(Query);
     console.log("response", { response });
     if (response["rowCount"]) {
+      console.log(response["rowCount"])
       return res.status(200).send({ success: "true" });
+      
     } else {
-      console.log(response);
+      console.log(response["rowCount"]);
       return res.status(500).send({ success: "false" });
     }
   } catch (e) {
