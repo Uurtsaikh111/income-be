@@ -7,6 +7,8 @@ const { login } = require("./route/login");
 const { getPgVersion } = require("./route/create-table");
 const { change } = require("./route/change");
 const { getUser } = require("./route/get-user");
+const { deleteUser } = require("./route/delete");
+const { currencySelect } = require("./route/update-user");
 const router = express.Router();
 dotenv.config();
 const app = express();
@@ -18,25 +20,10 @@ router.post("/login", login);
 router.get("/",getPgVersion);
 router.get("/change",change);
 router.get("/get-user",getUser);
+router.delete("/delete",deleteUser);
+router.post("/updateUser",currencySelect);
 
 app.use(router);
-
-
-
-// app.delete("/delete-user", async (req, res) => {
-//   const deleteUser = req.body;
-//   const client = await pool.connect();
-//   const Q = `DELETE FROM users WHERE email='${deleteUser.email}'`;
-
-//   try {
-//     client.query(Q);
-//   } catch (e) {
-//     console.log(e);
-//   } finally {
-//     client.release();
-//   }
-//   res.status(200).send({ message: "User Delete is successfully" });
-// });
 
 app.listen(4000, () => {
   console.log("Server is running on port 4000");
