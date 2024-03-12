@@ -13,22 +13,28 @@ const pool = new Pool({
   },
 });
 
-exports.addUser = async (req, res) => {
-  const newUser = req.body;
-  console.log(newUser);
+exports.login = async (req, res) => {
+  
+  const user = req.body;
+  console.log("user", user);
   const client = await pool.connect();
-  const Query = `INSERT INTO users (name, email, id, password, currency) VALUES ('${newUser.name}','${newUser.email}','${newUser.id}','${newUser.password}','${newUser.currency}');`;
+  const Query = `SELECT * FROM users WHERE (email='${user.email}' AND password='${user.password}');`;
+
   try {
     const response = await client.query(Query);
-    //console.log("response", { response });
+    console.log("response", { response });
     if (response["rowCount"]) {
-      //console.log(response["rowCount"]);
+      console.log(response["rowCount"]);
       return res.status(200).send({ success: "true" });
-    } 
+    } else {
+      console.log(response["rowCount"]);
+      return res.status(500).send({ success: "false" });
+    }
   } catch (e) {
     console.log(e);
-    return res.status(500).send({ success: "false" });
   } finally {
     client.release();
+    console.log("user add successfully");
   }
+
 };
