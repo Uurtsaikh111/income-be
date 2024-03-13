@@ -14,7 +14,6 @@ const pool = new Pool({
 });
 
 exports.login = async (req, res) => {
-  
   const user = req.body;
   console.log("user", user);
   const client = await pool.connect();
@@ -23,9 +22,10 @@ exports.login = async (req, res) => {
   try {
     const response = await client.query(Query);
     console.log("response", { response });
+    const userId = response.rows[0];
     if (response["rowCount"]) {
       console.log(response["rowCount"]);
-      return res.status(200).send({ success: "true" });
+      return res.status(200).send({ userId });
     } else {
       console.log(response["rowCount"]);
       return res.status(500).send({ success: "false" });
@@ -36,5 +36,4 @@ exports.login = async (req, res) => {
     client.release();
     console.log("user add successfully");
   }
-
 };
