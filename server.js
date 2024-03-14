@@ -5,6 +5,7 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 const userRouter = require("./route/user.js");
+
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());

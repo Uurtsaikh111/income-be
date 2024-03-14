@@ -1,4 +1,4 @@
-const { getUsers } = require("../service/user-service");
+const { getUsers, addUsers, login } = require("../service/user-service");
 
 //usertei hamaaraltai
 const userRouter = require("express").Router();
@@ -8,10 +8,16 @@ userRouter.get("/users", async (req, res) => {
   res.json(users);
 });
 
-userRouter.post("/signup", async (req, res) => {
-    const newUserData = req.body;
-    const result = await addUser(newUserData);
-    res.json(result);
-  });
+userRouter.post("/add-user", async (req, res) => {
+  const newUserData = req.body;
+  const result = await addUsers(newUserData);
+  res.json(result);
+});
+
+userRouter.post("/login", async (req, res) => {
+  const newUserData = req.body;
+  const result = await login(newUserData);
+  res.json(result);
+});
 
 module.exports = userRouter;
