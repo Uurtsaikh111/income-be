@@ -48,6 +48,34 @@ async function addUsers(newUser) {
   }
 }
 
+async function updateUser(users) {
+  const client = await pool.connect();
+  const Query = `UPDATE users SET currency='${users.currency}' WHERE id='${users.id}'`;
+  let response;
+  try {
+    response = await client.query(Query);
+  } catch (e) {
+  } finally {
+    client.release();
+    console.log("Currency added successfully");
+  }
+
+  return "True";
+}
+
+async function deleteUser(users) {
+  const client = await pool.connect();
+  const Query = `DELETE FROM users WHERE email='${users.email}'`;
+  let response;
+  try {
+    response = await client.query(Query);
+  } catch (e) {
+  } finally {
+    client.release();
+  }
+  return "deleted user"
+}
+
 async function login(user) {
   const client = await pool.connect();
   const Query = `SELECT * FROM users WHERE (email='${user.email}' AND password='${user.password}');`;
@@ -66,21 +94,6 @@ async function login(user) {
   } else {
     return "false";
   }
-}
-
-async function updateUser(users) {
-  const client = await pool.connect();
-  const Query = `UPDATE users SET currency='${users.currency}' WHERE id='${users.id}'`;
-  let response;
-  try {
-    response = await client.query(Query);
-  } catch (e) {
-  } finally {
-    client.release();
-    console.log("Currency added successfully");
-  }
-
-  return "True";
 }
 
 async function createTable() {
@@ -112,5 +125,6 @@ module.exports = {
   login,
   updateUser,
   createTable,
-  dropTable
+  dropTable,
+  deleteUser
 };
