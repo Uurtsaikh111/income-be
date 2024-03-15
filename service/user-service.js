@@ -41,7 +41,7 @@ async function addUsers(newUser) {
   } finally {
     client.release();
   }
-  if (response==null) {
+  if (response == null) {
     return "false";
   } else {
     return "true";
@@ -54,7 +54,7 @@ async function login(user) {
   let response;
   try {
     response = await client.query(Query);
-    console.log(response);
+    
   } catch (e) {
   } finally {
     client.release();
@@ -68,24 +68,49 @@ async function login(user) {
   }
 }
 
-async function updateUser(user) {
+async function updateUser(users) {
   const client = await pool.connect();
-  const Query = `UPDATE users SET currency='${user.currency}' WHERE id='${user.id}'`;
+  const Query = `UPDATE users SET currency='${users.currency}' WHERE id='${users.id}'`;
   let response;
   try {
-    response = client.query(Query);
+    response = await client.query(Query);
   } catch (e) {
   } finally {
     client.release();
     console.log("Currency added successfully");
   }
 
-  return response.rows;
+  return "True";
 }
+
+async function createTable() {
+  const client = await pool.connect();
+  let response;
+  try {
+    response = await client.query("CREATE TABLE test (name VARCHAR(50) NOT NULL, currency TEXT, email VARCHAR(50) NOT NULL UNIQUE, id VARCHAR(50) NOT NULL PRIMARY KEY,password VARCHAR(30) NOT NULL)"
+    );
+  } finally {
+    client.release();
+  }
+}
+
+async function dropTable() {
+  const client = await pool.connect();
+  let response;
+  try {
+    response = await client.query( "DROP TABLE test;"
+    );
+  }  finally {
+    client.release();
+  }
+}
+
 
 module.exports = {
   getUsers,
   addUsers,
   login,
   updateUser,
+  createTable,
+  dropTable
 };
