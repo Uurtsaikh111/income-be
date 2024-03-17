@@ -6,6 +6,7 @@ const {
   createTable,
   dropTable,
   deleteUser,
+  getData,
 } = require("../service/user-service");
 
 const userRouter = require("express").Router();
@@ -46,6 +47,12 @@ userRouter.delete("/delete-user", async (req, res) => {
 userRouter.post("/login", async (req, res) => {
   const newUserData = req.body;
   const result = await login(newUserData);
+  res.json(result);
+});
+
+userRouter.post("/getData", async (req, res) => {
+  const newUserData = req.body;
+  const result = await getData(newUserData);
   res.json(result);
 });
 

@@ -1,4 +1,4 @@
-const { response } = require("express");
+//const { response } = require("express");
 const { Pool } = require("pg");
 
 const { PGHOST, PGDATABASE, PGUSER, PGPASSWORD, PGPORT } = process.env;
@@ -96,11 +96,32 @@ async function login(user) {
   }
 }
 
+async function getData(user) {
+  const client = await pool.connect();
+  const Query = `SELECT * FROM users WHERE (id='${user.id}');`;
+  let response;
+  try {
+    response = await client.query(Query);
+    
+  } catch (e) {
+  } finally {
+    client.release();
+  }
+  const userId = response.rows[0];
+
+  if (response["rowCount"]) {
+    return userId;
+  } 
+}
+
 async function createTable() {
   const client = await pool.connect();
   let response;
   try {
-    response = await client.query("CREATE TABLE test (name VARCHAR(50) NOT NULL, currency TEXT, email VARCHAR(50) NOT NULL UNIQUE, id VARCHAR(50) NOT NULL PRIMARY KEY,password VARCHAR(30) NOT NULL)"
+    response = await client.query("CREATE TABLE category (name VARCHAR(50) NOT NULL, id VARCHAR(50) NOT NULL PRIMARY KEY, category_image text )"
+    //"CREATE TABLE test (name VARCHAR(50) NOT NULL, currency TEXT, email VARCHAR(50) NOT NULL UNIQUE, id VARCHAR(50) NOT NULL PRIMARY KEY,password VARCHAR(30) NOT NULL)"
+    //"CREATE TABLE Category (name VARCHAR(50) NOT NULL, id VARCHAR(50) NOT NULL PRIMARY KEY, description TEXT, createdAt TIMESTAMP, updatedAt TIMESTAMP, category_image text )"
+    
     );
   } finally {
     client.release();
@@ -111,7 +132,7 @@ async function dropTable() {
   const client = await pool.connect();
   let response;
   try {
-    response = await client.query( "DROP TABLE test;"
+    response = await client.query( "DROP TABLE category;"
     );
   }  finally {
     client.release();
@@ -126,5 +147,6 @@ module.exports = {
   updateUser,
   createTable,
   dropTable,
-  deleteUser
+  deleteUser,
+  getData
 };
