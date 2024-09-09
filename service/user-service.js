@@ -57,7 +57,7 @@ async function updateUser(users) {
   } catch (e) {
   } finally {
     client.release();
-    console.log("Currency added successfully");
+   
   }
 
   return "True";
